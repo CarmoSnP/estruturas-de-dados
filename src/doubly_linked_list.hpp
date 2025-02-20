@@ -52,21 +52,44 @@ void DoublyLinkedList<T>::push_front(const T &value)
     _size++;
 }
 
+template<class T>
+void DoublyLinkedList<T>::print() const 
+{
+    for (auto& v: *this){
+        std :: cout << v << "<->"; 
+    }
+    std::cout << v << "<->";
+}
+
+// template <class T>
+// void DoublyLinkedList<T>::print() const
+// {
+//     Node *pos = head;
+//     while (pos != nullptr)
+//     {
+//         std::cout << pos->value << " <-> ";
+//         pos = pos->next;
+//     }
+//     std::cout << "NULL("<< size() <<")\n";
+// }
+
+
 template <class T>
 void DoublyLinkedList<T>::push_back(const T &value)
 {
     Node *new_node = new Node(value);
+
     if (empty())
     {
         head = new_node;
-        tail = new_node;
     }
     else
     {
-        tail->next = new_node;
         new_node->prev = tail;
-        tail = new_node;
+        tail->next = new_node;
     }
+
+    tail = new_node;
     _size++;
 }
 
@@ -98,20 +121,19 @@ void DoublyLinkedList<T>::pop_back()
     if (empty())
     {
         throw std::out_of_range("A lista está vazia");
-    }
-
-    Node *tmp = tail;
-    tail = tail->prev;
-    if (tail != nullptr)
+    }else if(size() == 1 )
     {
-        tail->next = nullptr;
-    }
-    else
-    {
+        delete tail;
         head = nullptr;
+        tail = nullptr;
+    } else 
+    {
+        auto temp = tail;
+        tail = tail ->prev;
+        tail -> next = nullptr; 
+        delete temp;
     }
-    delete tmp;
-    _size--;
+   _size--;
 }
 
 template <class T>
@@ -183,32 +205,4 @@ typename DoublyLinkedList<T>::template Iterator<U> DoublyLinkedList<T>::Iterator
         it.node = it.node->prev;
     }
     return it;
-}
-
-template <class T>
-template <class U>
-size_t DoublyLinkedList<T>::Iterator<U>::operator-(const Iterator<U> other) const
-{
-    size_t dist = 0;
-    for (auto it = *this; it.node != other.node; --it)
-    {
-        if (it.node == nullptr)
-        {
-            throw std::out_of_range("Iteradores não pertencem à mesma sequência");
-        }
-        dist++;
-    }
-    return dist;
-}
-
-template <class T>
-void DoublyLinkedList<T>::print() const
-{
-    Node *pos = head;
-    while (pos != nullptr)
-    {
-        std::cout << pos->value << " <-> ";
-        pos = pos->next;
-    }
-    std::cout << "NULL\n";
 }
