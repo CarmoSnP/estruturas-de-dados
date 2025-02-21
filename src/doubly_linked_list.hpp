@@ -274,3 +274,163 @@ void DoublyLinkedList<T>::insert(iterator pos, const T& value){
 
     _size++;
 }
+
+template<class T>
+void DoublyLinkedList<T>::erase(iterator frist, iterator last)
+{
+    if (frist == last){
+        return;
+    }
+    else if(frist == begin() and last == end())
+    {
+        delete head;
+        head == nullptr;
+        tail == nullptr;
+        _size = 0;
+        return;
+    }else if(frist == begin())
+    {
+        auto num_elementos_removidos = last - frist;
+
+        auto last_node = last.node;
+        auto last_prev_node = (--last).node;
+
+        last_node->prev = nullptr;
+        last_prev_node->next = nullptr;
+
+        head = last_node;
+
+        delete frist.node;
+
+        _size -= num_elementos_removidos;
+        return;
+    } else if(last == end())
+    {
+        auto num_elemento_removidos = last - frist;
+
+        auto frist_node = frist.node;
+        auto frist_prev_node = (--frist).node;
+
+        frist_prev_node->next = nullptr;
+        tail = frist_prev_node;
+
+        delete frist_node;
+
+        _size -= num_elemento_removidos;
+        return;
+    } else {
+        auto num_elementos_removidos = last - frist;
+
+        auto frist_node = frist.node;
+        auto frist_prev_node = (--frist).node;
+
+        auto last_node = last.node;
+        auto last_prev_node = (--last).node;
+
+        frist_prev_node->next = last_node;
+        last_node->prev = frist_prev_node;
+
+        last_prev_node->next = nullptr;
+        delete frist_node;
+        delete last_node;
+        _size -= num_elementos_removidos;
+    }
+
+}
+
+template<class T>
+template<class U>
+size_t DoublyLinkedList<T>::Iterator<U>::operator-(const Iterator<U> other) const {
+    auto pos = other;
+    size_t count = 0;
+    while(pos != *this){
+        count++;
+        ++pos;
+    }
+    return count;
+}
+
+template<class T>
+auto DoublyLinkedList<T>::find(const T& item) -> iterator {
+    auto it = begin();
+    while(it != end()){
+        if(*it == item ) break;
+        ++it;
+    }
+    return it;
+}
+
+template<class T>
+auto DoublyLinkedList<T>::find(const T& item) const -> const_iterator {
+    auto it = begin();
+    while(it != end())
+    {
+        if(*it == item) break;
+
+        ++it;
+    }
+    return it; 
+}
+
+template <class T>
+bool DoublyLinkedList<T>::contains(const T& item) const {
+    return find(item) != end();
+}
+
+template <class T>
+DoublyLinkedList<T>::DoublyLinkedList(const DoublyLinkedList<T>& other)
+    : head{nullptr}, tail{nullptr}, _size{0} {
+    for (auto& value : other) {
+        push_back(value);
+    }
+}
+
+template <class T>
+DoublyLinkedList<T>& DoublyLinkedList<T>::operator=(const DoublyLinkedList<T>& other) {
+    if (this != &other) {
+        clear();
+        for (auto& value : other) {
+            push_back(value);
+        }
+    }
+    return *this;
+}
+
+template <class T>
+void DoublyLinkedList<T>::clear() {
+    while (!empty()) {
+        pop_front();
+    }
+}
+
+template <class T>
+T& DoublyLinkedList<T>::front() {
+    if (empty()) {
+        throw std::out_of_range("A lista está vazia");
+    }
+    return head->value;
+}
+
+template <class T>
+const T& DoublyLinkedList<T>::front() const {
+    if (empty()) {
+        throw std::out_of_range("A lista está vazia");
+    }
+    return head->value;
+}
+
+template <class T>
+T& DoublyLinkedList<T>::back() {
+    if (empty()) {
+        throw std::out_of_range("A lista está vazia");
+    }
+    return tail->value;
+}
+
+template <class T>
+const T& DoublyLinkedList<T>::back() const {
+    if (empty()) {
+        throw std::out_of_range("A lista está vazia");
+    }
+    return tail->value;
+}
