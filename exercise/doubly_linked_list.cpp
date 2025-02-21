@@ -50,27 +50,7 @@ int main() {
     pos = lista.begin() + 4;
     lista.insert(pos, 55);
     lista.print();
-
-    std::cout << "Testando find() e contains():\n";
-    int busca = 15;
-    if (lista.contains(busca)) {
-        std::cout << "O elemento " << busca << " está na lista.\n";
-    } else {
-        std::cout << "O elemento " << busca << " não foi encontrado.\n";
-    }
-
-    std::cout << "Removendo um intervalo de elementos...\n";
-    lista.erase(lista.begin(), lista.begin() + 2);
-    lista.print();
-
-    std::cout << "Limpando a lista completamente...\n";
-    lista.clear();
     
-    if (lista.empty()) {
-        std::cout << "A lista está vazia!\n";
-    } else {
-        lista.print();
-    }
 
     return 0;
 }
