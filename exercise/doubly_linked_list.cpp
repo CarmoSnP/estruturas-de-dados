@@ -24,18 +24,31 @@ int main()
 
   lista.print();
 
-  for (auto &i : lista) // Corrigido erro de declaração
+  for (auto &i : lista) 
   {
     std::cout << i << ",";
   }
   std::cout << '\n';
 
-  lista.insert(lista.begin() - 1, 15);
+  lista.insert(lista.begin(), 15);
 
   lista.print();
 
   lista[4];
   lista[5];
+
+  auto pos = lista.begin();
+  std::cout<<"Primeiro da lista = "<<*pos<<'\n';
+  ++pos;
+  std::cout<<"Segundo da lista = "<<*pos<<'\n';
+  --pos;
+  std::cout<<"Primeiro da lista = "<<*pos<<'\n';
+
+  pos = lista.begin() + 4;
+
+  lista.insert(pos,55);
+
+  lista.print();
 
   return 0;
 }
