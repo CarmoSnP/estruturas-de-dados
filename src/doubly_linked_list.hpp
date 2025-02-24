@@ -7,11 +7,17 @@ template <class T>
 DoublyLinkedList<T>::Node::Node(const T &value)
     : value{value}, next{nullptr}, prev{nullptr} {}
 
+// template <class T>
+// DoublyLinkedList<T>::Node::~Node() {
+//     if (next != nullptr){
+//         delete next;
+//     }
+// }
+
 template <class T>
-DoublyLinkedList<T>::Node::~Node() {
-    if (next != nullptr){
-        delete next;
-    }
+DoublyLinkedList<T>::Node::~Node(){
+    next = nullptr; 
+    prev = nullptr;
 }
 
 template <class T>
@@ -19,12 +25,12 @@ DoublyLinkedList<T>::DoublyLinkedList()
     : head{nullptr}, tail{nullptr}, _size{0} {}
 
 template <class T>
-DoublyLinkedList<T>::~DoublyLinkedList()
-{
-    if (head != nullptr){
-        delete head;
+DoublyLinkedList<T>::~DoublyLinkedList() {
+    while (!empty()) {
+        pop_back();
     }
 }
+    
 
 template<class T>
 size_t DoublyLinkedList<T>::size() const{
@@ -65,10 +71,10 @@ void DoublyLinkedList<T>::print() const
 }
 
 
-template<class T>
-T& DoublyLinkedList<T>::operator[](size_t indece) {
-    return *(begin() + indece);
-} 
+// template<class T>
+// T& DoublyLinkedList<T>::operator[](size_t indece) {
+//     return *(begin() + indece);
+// } 
 
 // template <class T>
 // void DoublyLinkedList<T>::print() const
@@ -149,10 +155,6 @@ void DoublyLinkedList<T>::pop_back()
 
 template <class T>
 template <class U>
-DoublyLinkedList<T>::Iterator<U>::Iterator(U *ptr, bool end) : node{ptr}, end{end} {}
-
-template <class T>
-template <class U>
 auto &DoublyLinkedList<T>::Iterator<U>::operator*() const
 {
     return node->value;
@@ -160,20 +162,16 @@ auto &DoublyLinkedList<T>::Iterator<U>::operator*() const
 
 template <class T>
 template <class U>
-typename DoublyLinkedList<T>::template Iterator<U> &DoublyLinkedList<T>::Iterator<U>::operator++()
-{
-    if (node->next == nullptr){
+typename DoublyLinkedList<T>::template Iterator<U>&
+DoublyLinkedList<T>::Iterator<U>::operator++() {
+    if (node == nullptr || node->next == nullptr) {  
         end = true;
-    }
-    else{
-
-    if (node != nullptr)
-    {
+    } else {
         node = node->next;
-    }
     }
     return *this;
 }
+
 
 template <class T>
 template <class U>
@@ -206,34 +204,43 @@ bool DoublyLinkedList<T>::Iterator<U>::operator!=(const Iterator<U> &other) cons
     return not(*this == other);
 }
 
-template<class T>
-auto DoublyLinkedList<T>::begin() const -> const_iterator {
-    return const_iterator(head, empty());
-}
+template <class T>
+template <class U>
+DoublyLinkedList<T>::Iterator<U>::Iterator(U* ptr, bool end)
+    : node{ptr}, end{end} {}
 
-template<class T>
-auto DoublyLinkedList<T>::begin() -> iterator {
+// Begin iterator
+template <class T>
+typename DoublyLinkedList<T>::iterator DoublyLinkedList<T>::begin() {
     return iterator(head, empty());
 }
 
-template<class T>
-auto DoublyLinkedList<T>::end() const -> const_iterator {
-    return const_iterator(tail, true);
+template <class T>
+typename DoublyLinkedList<T>::const_iterator DoublyLinkedList<T>::begin() const{
+    return const_iterator(head, empty());
 }
 
-template<class T>
-auto DoublyLinkedList<T>::end() -> iterator {
+
+// End iterator
+template <class T>
+typename DoublyLinkedList<T>::iterator DoublyLinkedList<T>::end() {
     return iterator(tail, true);
 }
 
 template <class T>
+typename DoublyLinkedList<T>::const_iterator DoublyLinkedList<T>::end() const{
+    return const_iterator(tail, true);
+}
+
+template <class T>
 template <class U>
-typename DoublyLinkedList<T>::template Iterator<U> DoublyLinkedList<T>::Iterator<U>::operator+(size_t offset) const
-{
+typename DoublyLinkedList<T>::template Iterator<U> DoublyLinkedList<T>::Iterator<U>::operator+(size_t offset) const {
     Iterator<U> it = *this;
-    for (size_t i = 0; i < offset && it.node != nullptr; ++i)
-    {
+    for (size_t i = 0; i < offset && it.node != nullptr; ++i) {
         ++it;
+    }
+    if (it.node == nullptr) {
+        it.end = true;
     }
     return it;
 }
@@ -275,67 +282,45 @@ void DoublyLinkedList<T>::insert(iterator pos, const T& value){
     _size++;
 }
 
-template<class T>
-void DoublyLinkedList<T>::erase(iterator frist, iterator last)
-{
-    if (frist == last){
+template <class T>
+void DoublyLinkedList<T>::erase(iterator first, iterator last) {
+    if (empty() || first == last) {
         return;
     }
-    else if(frist == begin() and last == end())
-    {
-        delete head;
-        head == nullptr;
-        tail == nullptr;
-        _size = 0;
-        return;
-    }else if(frist == begin())
-    {
-        auto num_elementos_removidos = last - frist;
 
-        auto last_node = last.node;
-        auto last_prev_node = (--last).node;
+    Node* atual = first.node;
+    Node* final = last.end? nullptr: last.node;
 
-        last_node->prev = nullptr;
-        last_prev_node->next = nullptr;
+    // Se remover do inicio da lista
+    if (atual == head) {
+        head = final;
+    } else if (atual->prev) {
+        atual->prev->next = final;
+    }
 
-        head = last_node;
-
-        delete frist.node;
-
-        _size -= num_elementos_removidos;
-        return;
-    } else if(last == end())
-    {
-        auto num_elemento_removidos = last - frist;
-
-        auto frist_node = frist.node;
-        auto frist_prev_node = (--frist).node;
-
-        frist_prev_node->next = nullptr;
-        tail = frist_prev_node;
-
-        delete frist_node;
-
-        _size -= num_elemento_removidos;
-        return;
+    // Se estamos removendo até o final da lista
+    if (final == nullptr || last.end) {
+        tail = atual->prev;
+        if (tail) {
+            tail->next = nullptr;
+        }
     } else {
-        auto num_elementos_removidos = last - frist;
-
-        auto frist_node = frist.node;
-        auto frist_prev_node = (--frist).node;
-
-        auto last_node = last.node;
-        auto last_prev_node = (--last).node;
-
-        frist_prev_node->next = last_node;
-        last_node->prev = frist_prev_node;
-
-        last_prev_node->next = nullptr;
-        delete frist_node;
-        delete last_node;
-        _size -= num_elementos_removidos;
+        final->prev = atual->prev;
     }
 
+    // Deletar os nós no intervalo
+    while (atual && atual != final) {
+        Node* next = atual->next;
+        delete atual;
+        _size--;
+        atual = next;
+    }
+
+    // resetar os pontiros
+    if (_size == 0) {
+        head = nullptr;
+        tail = nullptr;
+    }
 }
 
 template<class T>
@@ -397,40 +382,44 @@ DoublyLinkedList<T>& DoublyLinkedList<T>::operator=(const DoublyLinkedList<T>& o
 }
 
 template <class T>
+T& DoublyLinkedList<T>::operator[](size_t index) {
+    if (index >= _size) {
+        throw std::out_of_range("Índice inválido!!");
+    }
+    auto it = begin();
+    for (size_t i = 0; i < index; ++i) {
+        ++it;
+    }
+    return *it;
+}
+
+template <class T>
+const T& DoublyLinkedList<T>::operator[](size_t index) const {
+    if (index >= _size) {
+        throw std::out_of_range("Índice inválido!!");
+    }
+    auto it = begin();
+    for (size_t i = 0; i < index; ++i) {
+        ++it;
+    }
+    return *it;
+}
+
+// template <class T>
+// void DoublyLinkedList<T>::clear() {
+//     while (!empty()) {
+//         pop_front();
+//     }
+// }
+
+template <class T>
 void DoublyLinkedList<T>::clear() {
-    while (!empty()) {
-        pop_front();
+    while (head != nullptr) {
+        Node* temp = head;
+        head = head->next;
+        delete temp;
     }
-}
-
-template <class T>
-T& DoublyLinkedList<T>::front() {
-    if (empty()) {
-        throw std::out_of_range("A lista está vazia");
-    }
-    return head->value;
-}
-
-template <class T>
-const T& DoublyLinkedList<T>::front() const {
-    if (empty()) {
-        throw std::out_of_range("A lista está vazia");
-    }
-    return head->value;
-}
-
-template <class T>
-T& DoublyLinkedList<T>::back() {
-    if (empty()) {
-        throw std::out_of_range("A lista está vazia");
-    }
-    return tail->value;
-}
-
-template <class T>
-const T& DoublyLinkedList<T>::back() const {
-    if (empty()) {
-        throw std::out_of_range("A lista está vazia");
-    }
-    return tail->value;
+    // Após limpar a lista, ajuste os ponteiros corretamente
+    tail = nullptr;
+    _size = 0;
 }

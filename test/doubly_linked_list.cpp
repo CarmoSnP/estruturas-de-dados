@@ -107,13 +107,19 @@ TEST_F(DoublyLinkedListTest, TestErase) {
 // Test case for the clear method
 TEST_F(DoublyLinkedListTest, TestClear) {
     list->push_back(10);
+    std::cout<<"push back 1:\n";
     list->push_back(20);
+    std::cout<<"push back 2:\n";
     list->push_back(30);
+    std::cout<<"push back 3:\n";
 
     list->clear();
+    std::cout<<"clear:\n";
 
     EXPECT_EQ(list->size(), 0);
     EXPECT_TRUE(list->empty());
+
+    std::cout<<"clear end\n";
 }
 
 // Test inserting at the front
@@ -203,8 +209,11 @@ TEST_F(DoublyLinkedListTest, TestContainsEmptyList) {
 // Test if iterating over the list works correctly
 TEST_F(DoublyLinkedListTest, TestIteratorTraversal) {
     list->push_back(10);
+    std::cout<<"entrou no push 1:\n";
     list->push_back(20);
+    std::cout<<"entrou no push 2:\n";
 
+    std::cout<<"entrou no for:\n";
     size_t index = 0;
     for (auto it = list->begin(); it != list->end(); ++it) {
         if (index == 0) {
@@ -214,6 +223,7 @@ TEST_F(DoublyLinkedListTest, TestIteratorTraversal) {
         }
         ++index;
     }
+    std::cout<<"saiu do for:\n";
 }
 
 // Test reverse iteration (decrementing iterator)
